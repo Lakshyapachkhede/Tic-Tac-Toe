@@ -1,11 +1,14 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 import math
 
 class TicTacToe:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Tic Tac Toe")
+        self.style = ttk.Style()
+        self.style.theme_use('clam')  # You can change the theme if you prefer
+        
         self.buttons = [[None]*3 for _ in range(3)]
         self.current_player = 'X'
         self.initialize_board()
@@ -14,9 +17,11 @@ class TicTacToe:
     def initialize_board(self):
         for i in range(3):
             for j in range(3):
-                self.buttons[i][j] = tk.Button(self.root, text="", font=('Arial', 20), width=4, height=2,
+                self.buttons[i][j] = ttk.Button(self.root, text="", style='Game.TButton',
                                                 command=lambda i=i, j=j: self.play_move(i, j))
-                self.buttons[i][j].grid(row=i, column=j)
+                self.buttons[i][j].grid(row=j, column=i, padx=5, pady=5, sticky="nsew")
+                self.style.configure('Game.TButton', font=('Arial', 20), width=5, height=3)
+
 
     def play_move(self, row, col):
         if self.buttons[row][col]['text'] == "":
@@ -30,7 +35,7 @@ class TicTacToe:
             else:
                 self.current_player = 'O' if self.current_player == 'X' else 'X'
                 if self.current_player == 'O':
-                    self.ai_move()
+                    self.root.after(200, self.ai_move)  # Delay AI move for better user experience
 
     def check_winner(self, player):
         for i in range(3):
@@ -43,11 +48,7 @@ class TicTacToe:
         return False
 
     def check_board_full(self):
-        for i in range(3):
-            for j in range(3):
-                if self.buttons[i][j]['text'] == "":
-                    return False
-        return True
+        return all(self.buttons[i][j]['text'] != "" for i in range(3) for j in range(3))
 
     def reset_board(self):
         for i in range(3):
